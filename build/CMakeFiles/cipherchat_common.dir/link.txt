@@ -1,0 +1,2 @@
+/usr/bin/ar qc libcipherchat_common.a CMakeFiles/cipherchat_common.dir/src/common/crypto.cpp.o CMakeFiles/cipherchat_common.dir/src/common/protocol.cpp.o CMakeFiles/cipherchat_common.dir/src/common/utils.cpp.o
+/usr/bin/ranlib libcipherchat_common.a

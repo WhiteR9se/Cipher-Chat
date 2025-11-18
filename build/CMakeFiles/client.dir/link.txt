@@ -1,0 +1,1 @@
+/usr/bin/c++ -O3 -DNDEBUG -Wl,--dependency-file=CMakeFiles/client.dir/link.d CMakeFiles/client.dir/src/client/main.cpp.o CMakeFiles/client.dir/src/client/client.cpp.o -o client  libcipherchat_common.a -lpthread /usr/lib/libssl.so /usr/lib/libcrypto.so

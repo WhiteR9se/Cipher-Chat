@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CipherChat – Project Summary</title>
+    <style>
+        body {
+            font-family: "Segoe UI", Roboto, system-ui, -apple-system, sans-serif;
+            margin: 2.5rem auto;
+            max-width: 960px;
+            line-height: 1.65;
+            color: #1f2933;
+            background: #ffffff;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        h1 {
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+        section {
+            margin-bottom: 2.5rem;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.25rem;
+        }
+        .card {
+            border: 1px solid rgba(0,0,0,0.08);
+            border-radius: 10px;
+            padding: 1.25rem;
+            background: #f9fafb;
+        }
+        code {
+            background: #f2f4f8;
+            padding: 0.15em 0.45em;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+        pre {
+            background: #f3f4f6;
+            color: #1f2937;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        table th, table td {
+            padding: 0.6rem;
+            border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+            text-align: left;
+        }
+        footer {
+            font-size: 0.9em;
+            color: rgba(30, 41, 59, 0.7);
+            text-align: center;
+            margin-top: 3rem;
+        }
+        a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>CipherChat</h1>
+    <p>Secure, end-to-end encrypted group chat written entirely in C++.</p>
+</header>
+
+<section>
+    <h2>Why It Matters</h2>
+    <div class="grid">
+        <div class="card">
+            <h3>Network Engineering</h3>
+            <p>Implements raw TCP sockets, concurrency, framed protocols, and room routing without relying on external frameworks.</p>
+        </div>
+        <div class="card">
+            <h3>Modern Cryptography</h3>
+            <p>Combines X25519 Diffie–Hellman, HKDF-SHA256, and AES-256-GCM to provide authenticated, end-to-end encrypted messaging.</p>
+        </div>
+        <div class="card">
+            <h3>Demonstrable Security</h3>
+            <p>Server logs and packet captures show only ciphertext; clients alone render plaintext, proving the E2EE story in minutes.</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>System Overview</h2>
+    <p>The relay (`./build/server`) only brokers presence and room membership. Terminal clients (`./build/client`) handle key exchange, encryption, and UI. Each room keeps a rolling history of the last 100 ciphertext envelopes for late joiners; room logs are deleted automatically when the room empties.</p>
+    <table>
+        <thead>
+        <tr>
+            <th>Layer</th>
+            <th>Technique</th>
+            <th>Notes</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>Handshake</td>
+            <td>X25519 Diffie–Hellman</td>
+            <td>Fresh key pair per client connection.</td>
+        </tr>
+        <tr>
+            <td>Key Derivation</td>
+            <td>HKDF-SHA256 (32 bytes)</td>
+            <td>Context-specific labels for control vs. chat channels.</td>
+        </tr>
+        <tr>
+            <td>Control Frames</td>
+            <td>AES-256-GCM</td>
+            <td>AAD binds to the client ID; used for room keys and events.</td>
+        </tr>
+        <tr>
+            <td>Chat Frames</td>
+            <td>AES-256-GCM</td>
+            <td>AAD binds to room ID &amp; sender ID; server forwards ciphertext only.</td>
+        </tr>
+        </tbody>
+    </table>
+</section>
+
+<section>
+    <h2>Build &amp; Run (Linux)</h2>
+    <pre><code>sudo apt install build-essential cmake libssl-dev
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+
+# Launch relay on port 7777
+./build/server 7777
+
+# Connect clients (new terminal per user)
+./build/client 127.0.0.1 7777 alice
+./build/client 127.0.0.1 7777 bob</code></pre>
+</section>
+
+<section>
+    <h2>Using the Client</h2>
+    <ul>
+        <li><code>/rooms</code> – list rooms with numeric IDs.</li>
+        <li><code>/join &lt;name&gt;</code> – create or join a named room (auto key rotation).</li>
+        <li><code>/join &lt;id&gt;</code> – join by numeric ID.</li>
+        <li><code>/leave</code> – exit the current room.</li>
+        <li><code>/rename &lt;alias&gt;</code> – change your display name.</li>
+        <li><code>/quit</code> – cleanly disconnect.</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Proving End-to-End Encryption</h2>
+    <ul>
+        <li><strong>Server log:</strong> <code>logs/server.log</code> retains timestamped handshake, join/leave, and ciphertext summaries across restarts.</li>
+        <li><strong>Room logs:</strong> <code>logs/room_&lt;id&gt;.log</code> contain Base64 ciphertext while rooms are active; they disappear automatically when the room empties or the relay shuts down.</li>
+        <li><strong>Packet capture:</strong> <code>tcpdump -X -s0 port 7777</code> shows non-human-readable payloads only.</li>
+        <li><strong>Client UI:</strong> the only place plaintext appears; all other layers remain gibberish.</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Demo Script (2 Minutes)</h2>
+    <ol>
+        <li>Start the relay and two clients; highlight the handshake entries in <code>server.log</code>.</li>
+        <li>Share messages and show the corresponding Base64 ciphertext entries in <code>logs/room_1.log</code>.</li>
+        <li>Create a new room, jump between rooms, and point out the automatic join/leave events.</li>
+        <li>Capture packets with Wireshark or tcpdump to underline that only ciphertext travels over the wire.</li>
+        <li>Stop the relay; observe that room logs vanish while <code>server.log</code> persists with clean separators.</li>
+    </ol>
+</section>
+
+<section>
+    <h2>Next Steps</h2>
+    <p>Planned enhancements include timed key rotation for even tighter forward secrecy, authenticated user accounts, richer terminal UI, and optional file-sharing extensions layered atop the encrypted channel.</p>
+</section>
+
+<footer>
+    <p>Explore the full report: <a href="../README.md">README.md</a></p>
+</footer>
+</body>
+</html>

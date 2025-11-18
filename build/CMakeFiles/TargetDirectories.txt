@@ -1,0 +1,9 @@
+/home/kermit/Desktop/ThirdYear/CN/Project/build/CMakeFiles/cipherchat_common.dir
+/home/kermit/Desktop/ThirdYear/CN/Project/build/CMakeFiles/server.dir
+/home/kermit/Desktop/ThirdYear/CN/Project/build/CMakeFiles/client.dir
+/home/kermit/Desktop/ThirdYear/CN/Project/build/CMakeFiles/edit_cache.dir
+/home/kermit/Desktop/ThirdYear/CN/Project/build/CMakeFiles/rebuild_cache.dir
+/home/kermit/Desktop/ThirdYear/CN/Project/build/CMakeFiles/list_install_components.dir
+/home/kermit/Desktop/ThirdYear/CN/Project/build/CMakeFiles/install.dir
+/home/kermit/Desktop/ThirdYear/CN/Project/build/CMakeFiles/install/local.dir
+/home/kermit/Desktop/ThirdYear/CN/Project/build/CMakeFiles/install/strip.dir
