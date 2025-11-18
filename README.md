@@ -85,8 +85,9 @@ sudo apt install build-essential cmake libssl-dev
 
 ### 6.2 Configure & Compile
 ```bash
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build
+rm -rf build/    //if the build/ directory is present
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release (makes a new build project for you in the build directory and makes all the C/C++ files.) 
+cmake --build build (buils the project using cmake.)
 ```
 
 ### 6.3 Launching the System
