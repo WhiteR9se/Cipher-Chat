@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>CipherChat – Project Summary</title>
+    <title>CipherChat</title>
     <style>
         body {
             font-family: "Segoe UI", Roboto, system-ui, -apple-system, sans-serif;
@@ -70,27 +70,58 @@
         a:hover {
             text-decoration: underline;
         }
+        /* Title row with GitHub link */
+        .title-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+        }
+        .github-link {
+            display: inline-flex;
+            align-items: center;
+            color: inherit;
+        }
+        .github-link svg {
+            width: 32px;
+            height: 32px;
+            color: #111827; /* dark gray */
+            opacity: 0.9;
+            transition: opacity 0.15s ease, transform 0.15s ease;
+        }
+        .github-link:hover svg {
+            opacity: 1;
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 <body>
 <header>
-    <h1>CipherChat</h1>
-    <p>Secure, end-to-end encrypted group chat written entirely in C++.</p>
+    <div class="title-row">
+        <h1>CipherChat</h1>
+        <a class="github-link" href="https://github.com/WhiteR9se/Cipher-Chat" target="_blank" rel="noopener noreferrer" aria-label="View the project on GitHub">
+            <!-- Inline GitHub mark (octocat) -->
+       </svg>     <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false">
+                <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.2 1.87.85 2.33.65.07-.52.28-.85.51-1.05-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82A7.65 7.65 0 018 4.58c.68.003 1.36.092 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.10.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+            </svg>
+        </a>
+    </div>
+    <p>Secure, end-to-end encrypted terminal group chat written entirely in C++.</p>
 </header>
 
 <section>
-    <h2>Why It Matters</h2>
+    <h2>Why We Made It</h2>
     <div class="grid">
         <div class="card">
             <h3>Network Engineering</h3>
             <p>Implements raw TCP sockets, concurrency, framed protocols, and room routing without relying on external frameworks.</p>
         </div>
         <div class="card">
-            <h3>Modern Cryptography</h3>
-            <p>Combines X25519 Diffie–Hellman, HKDF-SHA256, and AES-256-GCM to provide authenticated, end-to-end encrypted messaging.</p>
+            <h3>Uses Modern Encryption</h3>
+            <p>Combines X25519 Diffie-Hellman, HKDF-SHA256, and AES-256-GCM to provide authenticated, end-to-end encrypted messaging.</p>
         </div>
         <div class="card">
-            <h3>Demonstrable Security</h3>
+            <h3>End-to-End Security</h3>
             <p>Server logs and packet captures show only ciphertext; clients alone render plaintext, proving the E2EE story in minutes.</p>
         </div>
     </div>
@@ -98,7 +129,9 @@
 
 <section>
     <h2>System Overview</h2>
-    <p>The relay (`./build/server`) only brokers presence and room membership. Terminal clients (`./build/client`) handle key exchange, encryption, and UI. Each room keeps a rolling history of the last 100 ciphertext envelopes for late joiners; room logs are deleted automatically when the room empties.</p>
+    <p>The server (located at /build/server) is only used for admin chat privileges like adding a new chat room etc. Terminal clients (located at /build/client) handle key exchange, encryption, and UI. Each room keeps history of the last 100 ciphertext envelopes for late joiners; room logs are deleted automatically when the room empties.</p>
+        <p>The server never has access to plaintext — it only forwards ciphertext envelopes and stores ciphertext logs.</p>
+        <p>All key exchange, encryption and decryption happen on the clients locally using ephemeral keys derived during the handshake.</p>
     <table>
         <thead>
         <tr>
@@ -110,7 +143,7 @@
         <tbody>
         <tr>
             <td>Handshake</td>
-            <td>X25519 Diffie–Hellman</td>
+            <td>X25519 Diffi-Hellman</td>
             <td>Fresh key pair per client connection.</td>
         </tr>
         <tr>
@@ -133,8 +166,9 @@
 </section>
 
 <section>
-    <h2>Build &amp; Run (Linux)</h2>
+    <h2>Build &amp; Run On Linux</h2>
     <pre><code>sudo apt install build-essential cmake libssl-dev
+rm -rf build/ #if build/ directory already exists
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build
 
@@ -146,8 +180,51 @@ cmake --build build
 ./build/client 127.0.0.1 7777 bob</code></pre>
 </section>
 
+<!-- Project file tree and folder explanations -->
+<section>
+    <h2>Project File Tree</h2>
+    <pre><code>
+CMakeLists.txt     # Cmake file to define how the project will be made
+README.md          # Readme of the project 
+build/             # generated build artifacts and binaries
+include/           # public headers for the project
+logs/              # runtime logs (server, rooms)
+src/               # source code
+client/            # client implementation and client main
+common/            # basic utilities, encryption and networking implementation (crypto, protocol, utils)
+server/            # server/relay implementation and server main
+webpage/           # this webpage's source code (index.html)
+index.html
+    ...
+    </code></pre>
+
+<section>bring back the how they interact sub section back to its original. it was fine as it was. 
+    <h2>Files &amp; How They Work</h2>
+    <p>Short descriptions of the main files and folders:</p>
+    <ul>
+        <li><strong>CMakeLists.txt</strong> — build configuration (CMake).</li>
+        <li><strong>README.md</strong> — project overview and run instructions.</li>
+        <li><strong>include/</strong> — public headers (crypto, protocol, utils).</li>
+        <li><strong>src/common/</strong> — shared code: crypto helpers, framing/protocol, utilities.</li>
+        <li><strong>src/server/</strong> — server: accepts connections, manages rooms, forwards ciphertext, writes logs.</li>
+        <li><strong>src/client/</strong> — client: interactive UI, handshake, encrypts/decrypts messages.</li>
+        <li><strong>build/</strong> — generated build artifacts and binaries (ignore in VCS).</li>
+        <li><strong>logs/</strong> — runtime logs; room logs contain ciphertext only.</li>
+        <li><strong>webpage/</strong> — documentation site (this page).</li>
+    </ul>
+    <h2>How the pieces interact (brief)</h2>
+    <ol>
+        <li>Startup: run <code>./build/server &lt;port&gt;</code>. The server listens for TCP connections and maintains room state in-memory and ciphertext room logs on disk.</li>
+        <li>Client connects: <code>./build/client &lt;host&gt; &lt;port&gt; &lt;name&gt;</code>. The client opens a TCP connection and initiates a handshake using functions in <code>crypto.cpp</code> and messages defined in <code>protocol.cpp</code>.</li>
+        <li>Handshake: Clients exchange ephemeral X25519 public keys. Each client runs HKDF to derive symmetric keys; these steps happen entirely on the clients (implemented in <code>crypto.cpp</code>), so the server only sees the public keys and handshake metadata, not secrets.</li>
+        <li>Messaging: When a user sends text, the client encrypts the plaintext with the room key (AES-256-GCM) and sends a framed ciphertext packet. The server receives the framed packet and forwards the ciphertext to room peers and appends a Base64 ciphertext entry to the room log. Recipients decrypt locally using their derived keys.</li>
+        <li>Result: At no point does the server perform decryption — server logs and packet captures therefore contain only ciphertext, which you can verify with Wireshark (see the "Proving End-to-End Encryption" section).</li>
+    </ol>
+</section>
+
 <section>
     <h2>Using the Client</h2>
+        Commands that you can input while you have a client ternimal running:-
     <ul>
         <li><code>/rooms</code> – list rooms with numeric IDs.</li>
         <li><code>/join &lt;name&gt;</code> – create or join a named room (auto key rotation).</li>
@@ -160,32 +237,18 @@ cmake --build build
 
 <section>
     <h2>Proving End-to-End Encryption</h2>
-    <ul>
-        <li><strong>Server log:</strong> <code>logs/server.log</code> retains timestamped handshake, join/leave, and ciphertext summaries across restarts.</li>
-        <li><strong>Room logs:</strong> <code>logs/room_&lt;id&gt;.log</code> contain Base64 ciphertext while rooms are active; they disappear automatically when the room empties or the relay shuts down.</li>
-        <li><strong>Packet capture:</strong> <code>tcpdump -X -s0 port 7777</code> shows non-human-readable payloads only.</li>
-        <li><strong>Client UI:</strong> the only place plaintext appears; all other layers remain gibberish.</li>
-    </ul>
-</section>
-
-<section>
-    <h2>Demo Script (2 Minutes)</h2>
+    <p>We are going to prove the end-to-end encryption by spoofing the packets being send to the server.</p>
     <ol>
-        <li>Start the relay and two clients; highlight the handshake entries in <code>server.log</code>.</li>
-        <li>Share messages and show the corresponding Base64 ciphertext entries in <code>logs/room_1.log</code>.</li>
-        <li>Create a new room, jump between rooms, and point out the automatic join/leave events.</li>
-        <li>Capture packets with Wireshark or tcpdump to underline that only ciphertext travels over the wire.</li>
-        <li>Stop the relay; observe that room logs vanish while <code>server.log</code> persists with clean separators.</li>
+        <li>Install Wireshark on your PC.</li>
+        <li>Start a packet capture and set the capture filter (or the GUI capture settings) to the server's IP address and port (for example: <code>host 127.0.0.1 and port 7777</code>).</li>
+        <li>In the packet list, select a TCP packet and choose the <strong>"follow tcp route"</strong> option.</li>
+        <li>Whenever a client sends a message, inspect the <strong>Data</strong> / payload section — you will only see gibberish (ciphertext), not the actual plaintext message.</li>
     </ol>
 </section>
 
-<section>
-    <h2>Next Steps</h2>
-    <p>Planned enhancements include timed key rotation for even tighter forward secrecy, authenticated user accounts, richer terminal UI, and optional file-sharing extensions layered atop the encrypted channel.</p>
-</section>
 
 <footer>
-    <p>Explore the full report: <a href="../README.md">README.md</a></p>
+    <p>Explore the full project source code: <a href="https://github.com/WhiteR9se/Cipher-Chat">Github</a></p>
 </footer>
 </body>
 </html>
